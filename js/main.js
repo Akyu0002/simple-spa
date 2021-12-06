@@ -6,6 +6,8 @@ const APP = {
   init: () => {
     let search = document.getElementById("btnSearch");
     search.addEventListener("click", SEARCH.doSearch);
+
+    location.hash = `#`
   },
 };
 
@@ -55,6 +57,7 @@ const ACTORS = {
   actors: [],
 
   displayActors: (actors) => {
+
     let homePage = document.getElementById("instructions");
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
@@ -62,6 +65,8 @@ const ACTORS = {
     homePage.style.display = "none";
     actorsPage.style.display = "block";
     mediaPage.style.display = "none";
+
+    location.hash = `#${SEARCH.input}`
 
     let df = document.createDocumentFragment();
 
@@ -76,6 +81,8 @@ const ACTORS = {
     );
 
     actors.forEach((actor) => {
+
+
       let cardDeckDiv = document.createElement("div");
       cardDeckDiv.className = "col";
       cardDeckDiv.style.cursor = "pointer";
@@ -126,10 +133,12 @@ const ACTORS = {
 
 const MEDIA = {
   movies: [],
+  
 
   displayMedia: (ev) => {
     let actorTarget = ev.target.closest(".card");
-    let actorID = actorTarget.getAttribute("data-id");
+    let actorID =  actorTarget.getAttribute("data-id")
+    // let actorID = actorTarget.getAttribute("data-id");
 
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
@@ -142,6 +151,8 @@ const MEDIA = {
     backButton.style.display = "block"
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
+
+    location.hash = SEARCH.input +  '/' + actorID
   
     let media = JSON.parse(localStorage.getItem(key));
 
@@ -161,8 +172,8 @@ const MEDIA = {
     media.forEach((actor) => {
       if (actor.id == actorID) {
         actor.known_for.forEach((media) => {
-          console.log(media);
-
+          // console.log(media);
+       
           let cardMediaDeckDiv = document.createElement("div");
           cardMediaDeckDiv.classList.add("col", "pb-2")
 
@@ -218,6 +229,8 @@ const MEDIA = {
   goBack: (ev) => {
     ev.preventDefault()
 
+    location.hash = `#${SEARCH.input}`
+
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
     let backButton = document.getElementById("btnBack")
@@ -240,8 +253,17 @@ const STORAGE = {
 
 const NAV = {
 
+  setHomeURL: (ev) => {
+
+    // ev.stopPropagation();
+    history.replaceState({ id: 1 }, '', `${APP.baseURL}/#`);
+    // document.title = 'new string';
+
+    let test = location.hash = `#${SEARCH.input}/${MEDIA.actorID}`
+    console.log(test)
+  },
+
 };
 
 //Start everything running
-
 document.addEventListener("DOMContentLoaded", APP.init);

@@ -87,11 +87,7 @@ form {
 #btnBack {
   display: none;
 }
-#instructions.active,
-#actors.active,
-#media.active {
-  display: block;
-}
+
 #instructions h2,
 #actors h2,
 #media h2 {
