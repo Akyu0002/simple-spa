@@ -152,11 +152,7 @@ const MEDIA = {
     backButton.style.display = "block"
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
-    // if (key in localStorage) {
-    //   MEDIA.movies = localStorage.getItem(key);
-    // } else {
-    //   MEDIA.movies = SEARCH.doFetch();
-    // }
+  
     let media = JSON.parse(localStorage.getItem(key));
 
 
