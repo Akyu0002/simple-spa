@@ -1,18 +1,14 @@
-//app is for general control over the application
-//and connections between the other components
 const APP = {
   KEY: "883762e0241bf7da58c9cb6546739dea",
   baseURL: "https://api.themoviedb.org/3/",
   imgURL: "http://image.tmdb.org/t/p/w500",
 
   init: () => {
-    //this function runs when the page loads
     let search = document.getElementById("btnSearch");
     search.addEventListener("click", SEARCH.doSearch);
   },
 };
 
-//search is for anything to do with the fetch api
 const SEARCH = {
   results: [],
   input: "",
@@ -55,7 +51,6 @@ const SEARCH = {
   },
 };
 
-//actors is for changes connected to content in the actors section
 const ACTORS = {
   actors: [],
 
@@ -129,11 +124,6 @@ const ACTORS = {
   },
 };
 
-//media is for changes connected to content in the media section
-// figure out the target clicked
-// Get ID of clicked
-// search through the key
-//element.closest
 const MEDIA = {
   movies: [],
 
@@ -206,9 +196,6 @@ const MEDIA = {
           let mediaVote = document.createElement("p")
           mediaVote.innerHTML = `Rating: ${media.vote_average}`
 
-          // let mediaDescription = document.createElement("p");
-          // mediaDescription.innerHTML = media.overview;
-
           mediaBodyDiv.append(
             mediaTitle,
             mediaDate,
@@ -242,9 +229,7 @@ const MEDIA = {
   }
 };
 
-//storage is for working with localStorage
 const STORAGE = {
-  //  this will be used in Assign 4
   BASE_KEY: "Tibet-Actors-Search-",
 
   setStorage: (input, results) => {
@@ -253,9 +238,8 @@ const STORAGE = {
   },
 };
 
-//nav is for anything connected to the history api and location
 const NAV = {
-  //this will be used in Assign 4
+
 };
 
 //Start everything running
