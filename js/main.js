@@ -7,7 +7,10 @@ const APP = {
     let search = document.getElementById("btnSearch");
     search.addEventListener("click", SEARCH.doSearch);
 
-    location.hash = `#`;
+    window.addEventListener("popstate", NAV.navigate())
+
+    NAV.homeURL()
+    
   },
 };
 
@@ -56,6 +59,7 @@ const SEARCH = {
 const ACTORS = {
   actors: [],
   sortedActors: [],
+  locationHash: '',
 
   displayActors: (actors) => {
     let homePage = document.getElementById("instructions");
@@ -66,7 +70,8 @@ const ACTORS = {
     actorsPage.style.display = "block";
     mediaPage.style.display = "none";
 
-    location.hash = `${SEARCH.input}`;
+    NAV.actorURL()
+    document.title = `ActorSearchDB | ${locationHash}`
 
     let sortName = document.getElementById("sortName");
     sortName.addEventListener("click", ACTORS.sortName);
@@ -137,6 +142,8 @@ const ACTORS = {
   sortName: (ev) => {
     let descend = document.getElementById("nameDescend");
     let ascend = document.getElementById("nameAscend");
+    popDescend.classList.remove('active');
+    popAscend.classList.remove('active');
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
     let data = JSON.parse(localStorage.getItem(key));
@@ -150,6 +157,8 @@ const ACTORS = {
       let personB = b.name;
 
       if (p.classList.contains("active")) {
+        ascend.classList.add("active");
+        descend.classList.remove('active')
         if (personA > personB) {
           return 1;
         }
@@ -158,6 +167,8 @@ const ACTORS = {
         }
         return 0;
       } else {
+        descend.classList.add("active");
+        ascend.classList.remove('active')
         if (personA < personB) {
           return 1;
         }
@@ -172,6 +183,9 @@ const ACTORS = {
   },
 
   sortPopularity: (ev) => {
+    nameAscend.classList.remove('active');
+    nameDescend.classList.remove('active');
+
     let key = STORAGE.BASE_KEY + SEARCH.input;
     let data = JSON.parse(localStorage.getItem(key));
     let dataCopy = [...data];
@@ -184,6 +198,8 @@ const ACTORS = {
       let personB = b.popularity;
 
       if (p.classList.contains("active")) {
+        popAscend.classList.remove("active");
+        popDescend.classList.add('active')
         if (personA > personB) {
           return 1;
         }
@@ -192,6 +208,8 @@ const ACTORS = {
         }
         return 0;
       } else {
+        popDescend.classList.remove("active");
+        popAscend.classList.add('active')
         if (personA < personB) {
           return 1;
         }
@@ -224,8 +242,6 @@ const MEDIA = {
     backButton.style.display = "block";
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
-
-    location.hash = SEARCH.input + "/" + actorID;
 
     let media = JSON.parse(localStorage.getItem(key));
 
@@ -316,7 +332,25 @@ const STORAGE = {
   },
 };
 
-const NAV = {};
+const NAV = {
+
+  homeURL: () => {
+    location.hash = `#`;
+
+  },
+
+  actorURL: () => {
+    locationHash = location.hash = `${SEARCH.input}`;
+  },
+
+  mediaURL: () => {
+    location.hash = SEARCH.input + "/" + actorID;
+  },
+
+  navigate: () => {
+    
+  }
+};
 
 //Start everything running
 document.addEventListener("DOMContentLoaded", APP.init);

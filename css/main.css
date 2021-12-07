@@ -138,7 +138,9 @@ form {
 #actors.active,
 #media.active,
 #nameDescend.active,
-#nameAscend.active {
+#nameAscend.active,
+#popDescend.active,
+#popAscend.active {
   display: block;
 }
 .content p {
