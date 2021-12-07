@@ -100,6 +100,26 @@ form {
   cursor: pointer;
 }
 
+.loader.active {
+  border: 1rem solid #0d253f;
+  border-top: 1rem solid #01b4e4;
+  border-bottom: 1rem solid #90cea1;
+  border-radius: 50%;
+  width: 7.5rem;
+  height: 7.5rem;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 #instructions {
   display: block;
 }

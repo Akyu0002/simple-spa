@@ -30,11 +30,15 @@ const SEARCH = {
     } else {
       SEARCH.doFetch();
     }
+
+
+
   },
 
   doFetch() {
     let url = `${APP.baseURL}search/person?api_key=${APP.KEY}&query=${SEARCH.input}&language=en-US`;
-
+    let loader = document.querySelector('.loader')
+    loader.classList.add('active')
     fetch(url)
       .then((response) => {
         if (response.ok) {
@@ -49,16 +53,20 @@ const SEARCH = {
         SEARCH.results = data.results;
         STORAGE.setStorage(SEARCH.input, data.results);
         ACTORS.displayActors(data.results);
+        loader.classList.remove("active")
       })
       .catch((err) => {
         alert(err.message);
       });
+
   },
+
 };
 
 const ACTORS = {
   actors: [],
   sortedActors: [],
+
 
   displayActors: (actors) => {
     let homePage = document.getElementById("instructions");
@@ -69,7 +77,6 @@ const ACTORS = {
     actorsPage.style.display = "block";
     mediaPage.style.display = "none";
 
-    NAV.actorURL()
 
     let sortName = document.getElementById("sortName");
     sortName.addEventListener("click", ACTORS.sortName);
