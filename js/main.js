@@ -7,7 +7,7 @@ const APP = {
     let search = document.getElementById("btnSearch");
     search.addEventListener("click", SEARCH.doSearch);
 
-    window.addEventListener("popstate", NAV.navigate())
+    window.addEventListener("popstate", NAV.navigate)
 
     NAV.homeURL()
     
@@ -59,7 +59,6 @@ const SEARCH = {
 const ACTORS = {
   actors: [],
   sortedActors: [],
-  locationHash: '',
 
   displayActors: (actors) => {
     let homePage = document.getElementById("instructions");
@@ -71,11 +70,10 @@ const ACTORS = {
     mediaPage.style.display = "none";
 
     NAV.actorURL()
-    document.title = `ActorSearchDB | ${locationHash}`
 
     let sortName = document.getElementById("sortName");
     sortName.addEventListener("click", ACTORS.sortName);
-
+    
     let sortPopularity = document.getElementById("sortPopularity");
     sortPopularity.addEventListener("click", ACTORS.sortPopularity);
 
@@ -150,13 +148,13 @@ const ACTORS = {
     let dataCopy = [...data];
 
     let p = document.getElementById("sortName");
-    p.classList.toggle("active");
+    p.classList.toggle("sort");
 
     let newData = dataCopy.sort((a, b) => {
       let personA = a.name;
       let personB = b.name;
 
-      if (p.classList.contains("active")) {
+      if (p.classList.contains("sort")) {
         ascend.classList.add("active");
         descend.classList.remove('active')
         if (personA > personB) {
@@ -191,13 +189,12 @@ const ACTORS = {
     let dataCopy = [...data];
 
     let p = document.getElementById("sortPopularity");
-    p.classList.toggle("active");
+    p.classList.toggle("sort");
 
     let popData = dataCopy.sort((a, b) => {
       let personA = a.popularity;
       let personB = b.popularity;
-
-      if (p.classList.contains("active")) {
+      if (p.classList.contains("sort")) {
         popAscend.classList.remove("active");
         popDescend.classList.add('active')
         if (personA > personB) {
@@ -226,10 +223,11 @@ const ACTORS = {
 
 const MEDIA = {
   movies: [],
+  actorID: null,
 
   displayMedia: (ev) => {
     let actorTarget = ev.target.closest(".card");
-    let actorID = actorTarget.getAttribute("data-id");
+    MEDIA.actorID = actorTarget.getAttribute("data-id");
 
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
@@ -245,6 +243,8 @@ const MEDIA = {
 
     let media = JSON.parse(localStorage.getItem(key));
 
+    NAV.mediaURL() // Set location hash
+
     let mediaDF = document.createDocumentFragment();
 
     let mediaCardRowDiv = document.createElement("div");
@@ -257,7 +257,7 @@ const MEDIA = {
     );
 
     media.forEach((actor) => {
-      if (actor.id == actorID) {
+      if (actor.id == MEDIA.actorID) {
         actor.known_for.forEach((media) => {
 
           let cardMediaDeckDiv = document.createElement("div");
@@ -317,7 +317,6 @@ const MEDIA = {
     let backButton = document.getElementById("btnBack");
 
     backButton.style.display = "none";
-
     mediaPage.style.display = "none";
     actorsPage.style.display = "block";
   },
@@ -333,22 +332,26 @@ const STORAGE = {
 };
 
 const NAV = {
+  locationHash: '',
 
   homeURL: () => {
-    location.hash = `#`;
-
+    NAV.locationHash =  location.hash = `#`;
+    document.title = `ActorSearchDB | Home`
   },
 
   actorURL: () => {
-    locationHash = location.hash = `${SEARCH.input}`;
+    NAV.locationHash = location.hash = `${SEARCH.input}`;
+    document.title = `ActorSearchDB | ${NAV.locationHash}`
   },
 
   mediaURL: () => {
-    location.hash = SEARCH.input + "/" + actorID;
+    NAV.locationHash =  location.hash = SEARCH.input + "/" + MEDIA.actorID;
+    document.title = `ActorSearchDB | ${NAV.locationHash} / ${MEDIA.actorID}`
   },
 
   navigate: () => {
-    
+// console.log(location.href)
+// console.log(history)
   }
 };
 
