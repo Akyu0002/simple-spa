@@ -75,6 +75,31 @@ form {
 
 /*********************** Content Area ***********************/
 
+.actorHeaderDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nameAscend,
+.nameDescend,
+.popAscend,
+.popDescend {
+  display: none;
+}
+
+.sortDiv {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.sortDiv p {
+  margin: 0;
+  cursor: pointer;
+}
+
 #instructions {
   display: block;
 }
@@ -87,6 +112,18 @@ form {
 #btnBack {
   display: none;
 }
+#nameAscend {
+  display: none;
+}
+#nameDescend {
+  display: none;
+}
+#popAscend {
+  display: none;
+}
+#popDescend {
+  display: none;
+}
 
 #instructions h2,
 #actors h2,
@@ -97,6 +134,13 @@ form {
   padding: 1rem;
 }
 
+#instructions.active,
+#actors.active,
+#media.active,
+#nameDescend.active,
+#nameAscend.active {
+  display: block;
+}
 .content p {
   padding: 0 1rem;
   margin: 1rem 0;

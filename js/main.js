@@ -7,7 +7,7 @@ const APP = {
     let search = document.getElementById("btnSearch");
     search.addEventListener("click", SEARCH.doSearch);
 
-    location.hash = `#`
+    location.hash = `#`;
   },
 };
 
@@ -55,9 +55,9 @@ const SEARCH = {
 
 const ACTORS = {
   actors: [],
+  sortedActors: [],
 
   displayActors: (actors) => {
-
     let homePage = document.getElementById("instructions");
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
@@ -66,7 +66,13 @@ const ACTORS = {
     actorsPage.style.display = "block";
     mediaPage.style.display = "none";
 
-    location.hash = `#${SEARCH.input}`
+    location.hash = `${SEARCH.input}`;
+
+    let sortName = document.getElementById("sortName");
+    sortName.addEventListener("click", ACTORS.sortName);
+
+    let sortPopularity = document.getElementById("sortPopularity");
+    sortPopularity.addEventListener("click", ACTORS.sortPopularity);
 
     let df = document.createDocumentFragment();
 
@@ -81,8 +87,6 @@ const ACTORS = {
     );
 
     actors.forEach((actor) => {
-
-
       let cardDeckDiv = document.createElement("div");
       cardDeckDiv.className = "col";
       cardDeckDiv.style.cursor = "pointer";
@@ -100,15 +104,15 @@ const ACTORS = {
 
       if (actor.profile_path) img.src = APP.imgURL + actor.profile_path;
       else img.src = "https://via.placeholder.com/500x750?text=IMAGE+NOT+FOUND";
-      
-      img.alt = actor.name;
+
+      img.alt = `${actor.name}'s Profile Picture`;
 
       let bodyDiv = document.createElement("div");
       bodyDiv.className = "card-body";
 
-      let h5 = document.createElement("h5");
-      h5.className = "card-title";
-      h5.innerHTML = actor.name;
+      let h3 = document.createElement("h3");
+      h3.className = "card-title";
+      h3.innerHTML = actor.name;
 
       let pPopularity = document.createElement("p");
       pPopularity.className = "card-text";
@@ -118,7 +122,7 @@ const ACTORS = {
       pKnownFor.className = "card-text";
       pKnownFor.innerHTML = `Known for: ${actor.known_for_department}`;
 
-      bodyDiv.append(h5, pPopularity, pKnownFor);
+      bodyDiv.append(h3, pPopularity, pKnownFor);
       cardDiv.append(img, bodyDiv);
       cardDeckDiv.append(cardDiv);
       df.append(cardDeckDiv);
@@ -129,16 +133,85 @@ const ACTORS = {
     actorDiv.innerHTML = "";
     actorDiv.append(cardRowDiv);
   },
+
+  sortName: (ev) => {
+    let descend = document.getElementById("nameDescend");
+    let ascend = document.getElementById("nameAscend");
+
+    let key = STORAGE.BASE_KEY + SEARCH.input;
+    let data = JSON.parse(localStorage.getItem(key));
+    let dataCopy = [...data];
+
+    let p = document.getElementById("sortName");
+    p.classList.toggle("active");
+
+    let newData = dataCopy.sort((a, b) => {
+      let personA = a.name;
+      let personB = b.name;
+
+      if (p.classList.contains("active")) {
+        if (personA > personB) {
+          return 1;
+        }
+        if (personA < personB) {
+          return -1;
+        }
+        return 0;
+      } else {
+        if (personA < personB) {
+          return 1;
+        }
+        if (personA > personB) {
+          return -1;
+        }
+        return 0;
+      }
+    });
+    ACTORS.sortedActors = newData;
+    ACTORS.displayActors(ACTORS.sortedActors);
+  },
+
+  sortPopularity: (ev) => {
+    let key = STORAGE.BASE_KEY + SEARCH.input;
+    let data = JSON.parse(localStorage.getItem(key));
+    let dataCopy = [...data];
+
+    let p = document.getElementById("sortPopularity");
+    p.classList.toggle("active");
+
+    let popData = dataCopy.sort((a, b) => {
+      let personA = a.popularity;
+      let personB = b.popularity;
+
+      if (p.classList.contains("active")) {
+        if (personA > personB) {
+          return 1;
+        }
+        if (personA < personB) {
+          return -1;
+        }
+        return 0;
+      } else {
+        if (personA < personB) {
+          return 1;
+        }
+        if (personA > personB) {
+          return -1;
+        }
+        return 0;
+      }
+    });
+    ACTORS.sortedActors = popData;
+    ACTORS.displayActors(ACTORS.sortedActors);
+  },
 };
 
 const MEDIA = {
   movies: [],
-  
 
   displayMedia: (ev) => {
     let actorTarget = ev.target.closest(".card");
-    let actorID =  actorTarget.getAttribute("data-id")
-    // let actorID = actorTarget.getAttribute("data-id");
+    let actorID = actorTarget.getAttribute("data-id");
 
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
@@ -146,16 +219,15 @@ const MEDIA = {
     actorsPage.style.display = "none";
     mediaPage.style.display = "block";
 
-    let backButton = document.getElementById("btnBack")
-    backButton.addEventListener("click", MEDIA.goBack)
-    backButton.style.display = "block"
+    let backButton = document.getElementById("btnBack");
+    backButton.addEventListener("click", MEDIA.goBack);
+    backButton.style.display = "block";
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
 
-    location.hash = SEARCH.input +  '/' + actorID
-  
-    let media = JSON.parse(localStorage.getItem(key));
+    location.hash = SEARCH.input + "/" + actorID;
 
+    let media = JSON.parse(localStorage.getItem(key));
 
     let mediaDF = document.createDocumentFragment();
 
@@ -164,18 +236,16 @@ const MEDIA = {
       "row",
       "row-cols-1",
       "row-cols-md-8",
-      'row-cols-lg-4',
+      "row-cols-lg-4",
       "rowDiv"
-      
     );
 
     media.forEach((actor) => {
       if (actor.id == actorID) {
         actor.known_for.forEach((media) => {
-          // console.log(media);
-       
+
           let cardMediaDeckDiv = document.createElement("div");
-          cardMediaDeckDiv.classList.add("col", "pb-2")
+          cardMediaDeckDiv.classList.add("col", "pb-2");
 
           let mediaCardDiv = document.createElement("div");
           mediaCardDiv.className = "card";
@@ -198,21 +268,16 @@ const MEDIA = {
 
           let mediaDate = document.createElement("p");
           if (media.media_type === "movie") {
-          mediaDate.innerHTML = `Released: ${media.release_date}`;
-        }
+            mediaDate.innerHTML = `Released: ${media.release_date}`;
+          }
 
           let mediaType = document.createElement("p");
           mediaType.innerHTML = `Type: ${media.media_type}`;
 
-          let mediaVote = document.createElement("p")
-          mediaVote.innerHTML = `Rating: ${media.vote_average}`
+          let mediaVote = document.createElement("p");
+          mediaVote.innerHTML = `Rating: ${media.vote_average}`;
 
-          mediaBodyDiv.append(
-            mediaTitle,
-            mediaDate,
-            mediaType,
-            mediaVote
-          );
+          mediaBodyDiv.append(mediaTitle, mediaDate, mediaType, mediaVote);
           mediaCardDiv.append(mediaIMG, mediaBodyDiv);
           cardMediaDeckDiv.append(mediaCardDiv);
           mediaDF.append(cardMediaDeckDiv);
@@ -227,19 +292,19 @@ const MEDIA = {
   },
 
   goBack: (ev) => {
-    ev.preventDefault()
+    ev.preventDefault();
 
-    location.hash = `#${SEARCH.input}`
+    location.hash = `${SEARCH.input}`;
 
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
-    let backButton = document.getElementById("btnBack")
+    let backButton = document.getElementById("btnBack");
 
-    backButton.style.display = "none"
+    backButton.style.display = "none";
 
     mediaPage.style.display = "none";
     actorsPage.style.display = "block";
-  }
+  },
 };
 
 const STORAGE = {
@@ -251,19 +316,7 @@ const STORAGE = {
   },
 };
 
-const NAV = {
-
-  setHomeURL: (ev) => {
-
-    // ev.stopPropagation();
-    history.replaceState({ id: 1 }, '', `${APP.baseURL}/#`);
-    // document.title = 'new string';
-
-    let test = location.hash = `#${SEARCH.input}/${MEDIA.actorID}`
-    console.log(test)
-  },
-
-};
+const NAV = {};
 
 //Start everything running
 document.addEventListener("DOMContentLoaded", APP.init);
