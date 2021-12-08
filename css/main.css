@@ -173,8 +173,22 @@ form {
   min-height: 13rem;
 }
 
+.col::hover {
+  width: 110%;
+}
+
 .col {
   padding-bottom: 1rem;
+  animation: 1s cubic-bezier(0.38, 0, 0, 1.29) 0s 1 slideIn;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(100rem);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /*************************** Footer ***************************/

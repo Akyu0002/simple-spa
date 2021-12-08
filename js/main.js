@@ -247,7 +247,6 @@ const MEDIA = {
     backButton.style.display = "block";
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
-
     let media = JSON.parse(localStorage.getItem(key));
 
     NAV.mediaURL() // Set location hash
@@ -266,6 +265,7 @@ const MEDIA = {
     media.forEach((actor) => {
       if (actor.id == MEDIA.actorID) {
         actor.known_for.forEach((media) => {
+          console.log(media)
 
           let cardMediaDeckDiv = document.createElement("div");
           cardMediaDeckDiv.classList.add("col", "pb-2");
