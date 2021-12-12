@@ -75,31 +75,7 @@ form {
 
 /*********************** Content Area ***********************/
 
-.actorHeaderDiv {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nameAscend,
-.nameDescend,
-.popAscend,
-.popDescend {
-  display: none;
-}
-
-.sortDiv {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-}
-
-.sortDiv p {
-  margin: 0;
-  cursor: pointer;
-}
-
+/* Loader  */
 .loader.active {
   border: 1rem solid #0d253f;
   border-top: 1rem solid #01b4e4;
@@ -120,74 +96,98 @@ form {
   }
 }
 
-#instructions {
-  display: block;
-}
-#actors {
-  display: none;
-}
-#media {
-  display: none;
-}
-#btnBack {
-  display: none;
-}
-#nameAscend {
-  display: none;
-}
-#nameDescend {
-  display: none;
-}
-#popAscend {
-  display: none;
-}
-#popDescend {
-  display: none;
+/* Page Title Div Styling*/
+.actorHeaderDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #instructions h2,
 #actors h2,
 #media h2 {
   font-weight: 500;
-  font-size: 3rem;
+  font-size: 2rem;
   color: hsl(20, 10%, 30%);
   padding: 1rem;
 }
 
-#instructions.active,
-#actors.active,
-#media.active,
+.nameAscend,
+.nameDescend,
+.popAscend,
+.popDescend {
+  display: none;
+}
+
+.sortDiv {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.sortDiv p {
+  margin: 0;
+  cursor: pointer;
+}
+/* -------------------------------- */
+
+#instructions {
+  display: block;
+}
+
+#actors,
+#media,
+#btnBack,
+#nameAscend,
+#nameDescend,
+#popAscend,
+#popDescend {
+  display: none;
+}
+
 #nameDescend.active,
 #nameAscend.active,
 #popDescend.active,
 #popAscend.active {
   display: block;
 }
+
+/* Keep all cards the same size */
+.flexSizing {
+  display: flex;
+  flex-wrap: wrap;
+}
+.card-body {
+  flex: 1 1 15rem;
+}
+/* -------------------------------- */
+
 .content p {
   padding: 0 1rem;
   margin: 1rem 0;
   color: #625550;
 }
 
-.card-body {
-  min-height: 13rem;
+.col {
+  padding-bottom: 1rem;
 }
 
-.col::hover {
-  width: 110%;
+/* Card Animations */
+.col:nth-child(2n) {
+  animation: 1s cubic-bezier(0.46, 0, 0.48, 1.08) 0s 1 slideIn;
 }
 
 .col {
-  padding-bottom: 1rem;
   animation: 1s cubic-bezier(0.38, 0, 0, 1.29) 0s 1 slideIn;
 }
 
 @keyframes slideIn {
   0% {
-    transform: translateX(100rem);
+    transform: translateY(100rem);
   }
   100% {
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
@@ -217,6 +217,20 @@ footer {
 /************************ Media Queries ************************/
 
 @media screen and (min-width: 37.75em) {
+  .actorHeaderDiv {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #instructions h2,
+  #actors h2,
+  #media h2 {
+    font-weight: 500;
+    font-size: 3rem;
+    color: hsl(20, 10%, 30%);
+    padding: 1rem;
+  }
+
   .headerBar {
     display: flex;
     flex-direction: row;

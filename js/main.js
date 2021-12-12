@@ -4,13 +4,20 @@ const APP = {
   imgURL: "http://image.tmdb.org/t/p/w500",
 
   init: () => {
+    // Change home url
+    history.replaceState({}, '', '#') 
+
+    // Fire function on popstate
+    window.addEventListener("popstate", NAV.navigation) 
+
+    // Listen for events from the search button.
     let search = document.getElementById("btnSearch");
-    search.addEventListener("click", SEARCH.doSearch);
-
-    window.addEventListener("popstate", NAV.navigate)
-
-    NAV.homeURL()
+    search.addEventListener("click", SEARCH.getInput);
     
+    // Listen for click events on the H1
+    let title = document.getElementById("pageTitle")
+    title.style.cursor = "pointer";
+    title.addEventListener("click", NAV.goHome)
   },
 };
 
@@ -18,27 +25,44 @@ const SEARCH = {
   results: [],
   input: "",
 
-  doSearch: (ev) => {
+  getInput: (ev) => {
     ev.preventDefault();
-
+    
     SEARCH.input = document.getElementById("search").value;
-    let key = STORAGE.BASE_KEY + SEARCH.input;
+    history.pushState({}, '', `#${SEARCH.input}`)
+    document.title = `Actor SPA | ${SEARCH.input}`
+    
+    let input = location.hash
+    SEARCH.doSearch(input)
+  },
+
+  // Our search function checks if something is in local storage or not. 
+  // Also checks to see if the user input anything into the search bar.
+  doSearch: (input) => {
+    let key = STORAGE.BASE_KEY + input;
 
     if (key in localStorage) {
       ACTORS.actors = localStorage.getItem(key);
       ACTORS.displayActors(JSON.parse(ACTORS.actors));
     } else {
-      SEARCH.doFetch();
+      if (!SEARCH.input) {
+        alert("The search bar is empty!")
+      }else if (location.hash == '#') {
+        let homePage = document.getElementById("instructions");
+        homePage.style.display = "none";
+      } else {
+        SEARCH.doFetch();
+      }
+ 
     }
-
-
-
   },
 
+  // This is the main data fetch function.
   doFetch() {
     let url = `${APP.baseURL}search/person?api_key=${APP.KEY}&query=${SEARCH.input}&language=en-US`;
     let loader = document.querySelector('.loader')
     loader.classList.add('active')
+
     fetch(url)
       .then((response) => {
         if (response.ok) {
@@ -67,20 +91,23 @@ const ACTORS = {
   actors: [],
   sortedActors: [],
 
-
+// Display Actors function that builds the cards for the searched actor name.
   displayActors: (actors) => {
     let homePage = document.getElementById("instructions");
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
+    let backButton = document.getElementById("btnBack")
 
     homePage.style.display = "none";
     actorsPage.style.display = "block";
     mediaPage.style.display = "none";
+    backButton.style.display = "none"
 
-
+    // Listen for click on sort name tag
     let sortName = document.getElementById("sortName");
     sortName.addEventListener("click", ACTORS.sortName);
     
+     // Listen for click on sort popularity tag
     let sortPopularity = document.getElementById("sortPopularity");
     sortPopularity.addEventListener("click", ACTORS.sortPopularity);
 
@@ -97,21 +124,22 @@ const ACTORS = {
     );
 
     actors.forEach((actor) => {
+
       let cardDeckDiv = document.createElement("div");
-      cardDeckDiv.className = "col";
+      cardDeckDiv.classList.add("flexSizing", "col")
       cardDeckDiv.style.cursor = "pointer";
 
       let cardDiv = document.createElement("div");
       cardDiv.className = "card";
 
-      cardDiv.addEventListener("click", MEDIA.displayMedia);
+      // Listen for click on actor cards
+      cardDiv.addEventListener("click", MEDIA.setHistory);
       cardDiv.setAttribute("data-id", actor.id);
-
-      // Use this to go to local storage then use for media targeting, display what they are known_for.
 
       let img = document.createElement("img");
       img.className = "card-img-top";
 
+      // Check to see if API fetches image, if not we give a place holder.
       if (actor.profile_path) img.src = APP.imgURL + actor.profile_path;
       else img.src = "https://via.placeholder.com/500x750?text=IMAGE+NOT+FOUND";
 
@@ -142,8 +170,10 @@ const ACTORS = {
     let actorDiv = document.getElementById("actorsCardContent");
     actorDiv.innerHTML = "";
     actorDiv.append(cardRowDiv);
+
   },
 
+  // Sort by name A-Z and Z-A, toggled.
   sortName: (ev) => {
     let descend = document.getElementById("nameDescend");
     let ascend = document.getElementById("nameAscend");
@@ -187,6 +217,7 @@ const ACTORS = {
     ACTORS.displayActors(ACTORS.sortedActors);
   },
 
+  // Sort through popularity low - high and high to low, toggled.
   sortPopularity: (ev) => {
     nameAscend.classList.remove('active');
     nameDescend.classList.remove('active');
@@ -229,27 +260,33 @@ const ACTORS = {
 };
 
 const MEDIA = {
-  movies: [],
-  actorID: null,
 
-  displayMedia: (ev) => {
-    let actorTarget = ev.target.closest(".card");
-    MEDIA.actorID = actorTarget.getAttribute("data-id");
 
-    let actorsPage = document.getElementById("actors");
-    let mediaPage = document.getElementById("media");
+  setHistory: (ev) => {
+    let target = ev.target.closest('.card')
+    let actorID = target.getAttribute('data-id');
+   
+    history.pushState({}, '', `${location.hash}/${actorID}`)
+    
+    MEDIA.displayMedia(actorID)
+  },
 
-    actorsPage.style.display = "none";
-    mediaPage.style.display = "block";
-
-    let backButton = document.getElementById("btnBack");
-    backButton.addEventListener("click", MEDIA.goBack);
-    backButton.style.display = "block";
+  // This is the main function to build our media cards for the actor our user clicked on.
+  displayMedia: (actorID) => {
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
     let media = JSON.parse(localStorage.getItem(key));
 
-    NAV.mediaURL() // Set location hash
+    // Hide Actors Page & Show Media Page
+    let actorsPage = document.getElementById("actors");
+    let mediaPage = document.getElementById("media");
+    actorsPage.style.display = "none";
+    mediaPage.style.display = "block";
+
+    // Show the Back button.
+    let backButton = document.getElementById("btnBack");
+    backButton.addEventListener("click", MEDIA.goBack);
+    backButton.style.display = "block";
 
     let mediaDF = document.createDocumentFragment();
 
@@ -263,12 +300,17 @@ const MEDIA = {
     );
 
     media.forEach((actor) => {
-      if (actor.id == MEDIA.actorID) {
+
+      if (actor.id == actorID) {
         actor.known_for.forEach((media) => {
-          console.log(media)
+
+          h2Title = document.getElementById("mediaTitle")
+          h2Title.innerHTML = `Top 3 Titles for ${actor.name}`
+          document.title = `Actor SPA | ${actor.name}`
+
 
           let cardMediaDeckDiv = document.createElement("div");
-          cardMediaDeckDiv.classList.add("col", "pb-2");
+          cardMediaDeckDiv.classList.add("col", "pb-2",  "flexSizing");
 
           let mediaCardDiv = document.createElement("div");
           mediaCardDiv.className = "card";
@@ -294,8 +336,10 @@ const MEDIA = {
             mediaDate.innerHTML = `Released: ${media.release_date}`;
           }
 
+          // Display media type and make the first letter uppercase.
           let mediaType = document.createElement("p");
-          mediaType.innerHTML = `Type: ${media.media_type}`;
+          mediaTypeContent = `${media.media_type}`
+          mediaType.innerHTML = `Type: ${mediaTypeContent.charAt(0).toUpperCase()}${mediaTypeContent.slice(1)}`;
 
           let mediaVote = document.createElement("p");
           mediaVote.innerHTML = `Rating: ${media.vote_average}`;
@@ -312,12 +356,12 @@ const MEDIA = {
     let mediaDiv = document.getElementById("mediaCardContent");
     mediaDiv.innerHTML = "";
     mediaDiv.append(mediaCardRowDiv);
+
   },
 
+  // This function enables the back button to go back from the media page  to actors page.
   goBack: (ev) => {
     ev.preventDefault();
-
-    location.hash = `${SEARCH.input}`;
 
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
@@ -329,6 +373,7 @@ const MEDIA = {
   },
 };
 
+// Sets our storage
 const STORAGE = {
   BASE_KEY: "Tibet-Actors-Search-",
 
@@ -339,26 +384,32 @@ const STORAGE = {
 };
 
 const NAV = {
-  locationHash: '',
+  baseURL: null,
+  navigation: () => {
 
-  homeURL: () => {
-    NAV.locationHash =  location.hash = `#`;
-    document.title = `ActorSearchDB | Home`
+  let input = location.hash.replace('#', '')
+  SEARCH.input = input
+  SEARCH.doSearch(input)
+
+
   },
 
-  actorURL: () => {
-    NAV.locationHash = location.hash = `${SEARCH.input}`;
-    document.title = `ActorSearchDB | ${NAV.locationHash}`
-  },
+  // This function enables the user to click the title and navigate back to the home/instructions page.
+  goHome: (ev) => {
+    ev.preventDefault()
 
-  mediaURL: () => {
-    NAV.locationHash =  location.hash = SEARCH.input + "/" + MEDIA.actorID;
-    document.title = `ActorSearchDB | ${NAV.locationHash} / ${MEDIA.actorID}`
-  },
+    history.pushState({}, '', `#`)
 
-  navigate: () => {
-// console.log(location.href)
-// console.log(history)
+    let homePage = document.getElementById("instructions");
+    let actorsPage = document.getElementById("actors");
+    let mediaPage = document.getElementById("media");
+    let backButton = document.getElementById("btnBack")
+
+    homePage.style.display = "block";
+    actorsPage.style.display = "none";
+    mediaPage.style.display = "none";
+    backButton.style.display = "none"
+
   }
 };
 

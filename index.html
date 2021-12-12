@@ -24,7 +24,7 @@
   <body>
     <header>
       <section class="container-fluid justify-content-between headerBar">
-        <div class="logos">
+        <div class="logos" id="pageTitle">
           <h1>ActorSearchDB</h1>
         </div>
         <form class="m-0">
@@ -63,7 +63,7 @@
           </p>
         </div>
       </section>
-      <section id="actors" class="container">
+      <section id="actors" class="container center-align">
         <div class="loader"></div>
         <div class="actorHeaderDiv">
           <h2 class="center-align">Actors</h2>
@@ -77,16 +77,16 @@
           </div>
         </div>
 
-        <div id="actorsCardContent" class="content">
+        <div id="actorsCardContent" class="content center-align">
           <p>Content grid will go here</p>
           <p>Content grid will go here</p>
           <p>Content grid will go here</p>
           <p>Content grid will go here</p>
         </div>
       </section>
-      <section id="media">
+      <section id="media" class="container">
         <div class="loader"></div>
-        <h2>Movies & TV Shows</h2>
+        <h2 id="mediaTitle">Movies & TV Shows</h2>
         <div id="mediaCardContent" class="content"></div>
       </section>
     </main>
