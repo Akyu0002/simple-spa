@@ -30,7 +30,7 @@ const SEARCH = {
     
     SEARCH.input = document.getElementById("search").value;
     history.pushState({}, '', `#${SEARCH.input}`)
-    document.title = `Actor SPA | ${SEARCH.input}`
+    document.title = `ActorSearch | ${SEARCH.input}`
     
     let input = location.hash
     SEARCH.doSearch(input)
@@ -81,6 +81,7 @@ const SEARCH = {
       })
       .catch((err) => {
         alert(err.message);
+        loader.classList.remove("active")
       });
 
   },
@@ -93,6 +94,7 @@ const ACTORS = {
 
 // Display Actors function that builds the cards for the searched actor name.
   displayActors: (actors) => {
+    window.scrollTo(0,0)
     let homePage = document.getElementById("instructions");
     let actorsPage = document.getElementById("actors");
     let mediaPage = document.getElementById("media");
@@ -261,14 +263,14 @@ const ACTORS = {
 
 const MEDIA = {
 
-
   setHistory: (ev) => {
-    let target = ev.target.closest('.card')
-    let actorID = target.getAttribute('data-id');
+    let targetID = ev.target.closest('.card')
+     actorID = targetID.getAttribute('data-id');
+     console.log('set history')
    
     history.pushState({}, '', `${location.hash}/${actorID}`)
-    
     MEDIA.displayMedia(actorID)
+   
   },
 
   // This is the main function to build our media cards for the actor our user clicked on.
@@ -276,6 +278,7 @@ const MEDIA = {
 
     let key = STORAGE.BASE_KEY + SEARCH.input;
     let media = JSON.parse(localStorage.getItem(key));
+    // console.log(NAV.actorID)
 
     // Hide Actors Page & Show Media Page
     let actorsPage = document.getElementById("actors");
@@ -301,13 +304,12 @@ const MEDIA = {
 
     media.forEach((actor) => {
 
-      if (actor.id == actorID) {
+      if (actor.id == actorID || actor.id == NAV.actorID) {
         actor.known_for.forEach((media) => {
 
           h2Title = document.getElementById("mediaTitle")
           h2Title.innerHTML = `Top 3 Titles for ${actor.name}`
-          document.title = `Actor SPA | ${actor.name}`
-
+          document.title = `ActorSearch | ${actor.name}`
 
           let cardMediaDeckDiv = document.createElement("div");
           cardMediaDeckDiv.classList.add("col", "pb-2",  "flexSizing");
@@ -363,13 +365,17 @@ const MEDIA = {
   goBack: (ev) => {
     ev.preventDefault();
 
-    let actorsPage = document.getElementById("actors");
-    let mediaPage = document.getElementById("media");
-    let backButton = document.getElementById("btnBack");
+    // Commented code was used in A3 when History API was not implemented.
+    //I have replaced it with window.history.back so it works with our URL.
 
-    backButton.style.display = "none";
-    mediaPage.style.display = "none";
-    actorsPage.style.display = "block";
+    // let actorsPage = document.getElementById("actors");
+    // let mediaPage = document.getElementById("media");
+    // let backButton = document.getElementById("btnBack");
+
+    // backButton.style.display = "none";
+    // mediaPage.style.display = "none";
+    // actorsPage.style.display = "block";
+    window.history.back()
   },
 };
 
@@ -384,13 +390,33 @@ const STORAGE = {
 };
 
 const NAV = {
-  baseURL: null,
+  actorID: '',
   navigation: () => {
+      let input = location.hash.replace('#', '')
 
-  let input = location.hash.replace('#', '')
-  SEARCH.input = input
-  SEARCH.doSearch(input)
+      if (!input) {
 
+        document.getElementById("search").value = ''
+        let homePage = document.getElementById('instructions')
+        let actorsPage = document.getElementById('actors')
+        let mediaPage = document.getElementById('media')
+
+        actorsPage.style.display = 'none';
+        mediaPage.style.display = 'none';
+        homePage.style.display = 'block';
+
+      } else {
+        if (/\d/.test(input)) {
+
+          NAV.actorID = input.split('/')[1]
+          MEDIA.displayMedia(NAV.actorID)
+          
+        } else {
+          SEARCH.input = input
+          SEARCH.doSearch(input)
+        }
+      }
+   
 
   },
 
@@ -399,6 +425,7 @@ const NAV = {
     ev.preventDefault()
 
     history.pushState({}, '', `#`)
+    document.title = `ActorSearch | Home`
 
     let homePage = document.getElementById("instructions");
     let actorsPage = document.getElementById("actors");
