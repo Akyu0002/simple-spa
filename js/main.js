@@ -83,9 +83,7 @@ const SEARCH = {
         alert(err.message);
         loader.classList.remove("active")
       });
-
   },
-
 };
 
 const ACTORS = {
@@ -395,7 +393,6 @@ const NAV = {
       let input = location.hash.replace('#', '')
 
       if (!input) {
-
         document.getElementById("search").value = ''
         let homePage = document.getElementById('instructions')
         let actorsPage = document.getElementById('actors')
@@ -407,8 +404,9 @@ const NAV = {
 
       } else {
         if (/\d/.test(input)) {
-
+          console.log(input)
           NAV.actorID = input.split('/')[1]
+          SEARCH.input = input.split('/')[0];
           MEDIA.displayMedia(NAV.actorID)
           
         } else {
@@ -416,8 +414,6 @@ const NAV = {
           SEARCH.doSearch(input)
         }
       }
-   
-
   },
 
   // This function enables the user to click the title and navigate back to the home/instructions page.
